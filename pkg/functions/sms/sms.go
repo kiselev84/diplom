@@ -1,53 +1,54 @@
 package sms
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"project/skillbox/Diplom/pkg/data"
+	"sort"
 	"strings"
 )
 
 type SMSData struct {
-	Country      string
-	Bandwidth    string
-	ResponseTime string
-	Provider     string
+	Country      string `json:"country"`
+	Bandwidth    string `json:"bandwidth"`
+	ResponseTime string `json:"response_time"`
+	Provider     string `json:"provider"`
 }
 
-func Sms() {
-	storage := parseSmsFile()
-	printStore(storage)
+func Result() [][]SMSData {
+	result := make([][]SMSData, 2)
+	result[0] = smsSortByCountry(smsContent())
+	result[1] = smsSortByProvider(smsContent())
+	return result
 }
 
-func parseSmsFile() []SMSData {
-	//Read file
-	content, err := ioutil.ReadFile("./simulator/sms.data")
+func smsContent() []SMSData {
+	content, err := ioutil.ReadFile("sms.data")
+	var datas []SMSData
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//Parse and check file
-	var storage []SMSData
-
-	parseStr := strings.Split(string(content), "\n")
-
-	for _, line := range parseStr {
-		if strings.Count(line, ";") == 3 {
-			str := strings.Split(line, ";")
-			if _, ok := data.Providers[str[3]]; ok {
-				if _, okk := data.Countries[str[0]]; okk {
-					smsData := SMSData{Country: str[0], Bandwidth: str[1], ResponseTime: str[2], Provider: str[3]}
-					storage = append(storage, smsData)
+	lines := strings.Split(string(content), "\n")
+	for _, v := range lines {
+		if strings.Count(v, ";") == 3 {
+			str := strings.Split(v, ";")
+			if _, ok := data.Countries[str[0]]; ok {
+				if _, ok := data.Providers[str[3]]; ok {
+					smsData := SMSData{Country: data.Countries[str[0]], Bandwidth: str[1], ResponseTime: str[2], Provider: str[3]}
+					datas = append(datas, smsData)
 				}
 			}
 		}
 	}
-	return storage
+	return datas
 }
 
-func printStore(storage []SMSData) {
-	for _, str := range storage {
-		fmt.Printf("%v\n", str)
-	}
+func smsSortByCountry(b []SMSData) []SMSData {
+	sort.Slice(b, func(i, j int) bool { return b[i].Country < b[j].Country })
+	return b
+}
+
+func smsSortByProvider(b []SMSData) []SMSData {
+	sort.Slice(b, func(i, j int) bool { return b[i].Provider < b[j].Provider })
+	return b
 }

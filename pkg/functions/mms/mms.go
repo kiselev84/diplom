@@ -19,15 +19,11 @@ type MMSData struct {
 	ResponseTime string `json:"response_time"`
 }
 
-func MMS() {
+func Result() [][]MMSData {
 	result := make([][]MMSData, 2)
 	result[0] = mmsSortByCountry(mmsContent())
 	result[1] = mmsSortByProvider(mmsContent())
-
-	fmt.Println()
-	fmt.Printf("Sort by Country:\n %v\n\n", result[0])
-	fmt.Printf("Sort by Provider:\n %v\n\n", result[1])
-
+	return result
 }
 
 func mmsContent() []MMSData {

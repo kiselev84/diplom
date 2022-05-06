@@ -1,15 +1,12 @@
 package voice
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"project/skillbox/Diplom/pkg/data"
 	"strconv"
 	"strings"
 )
-
-
 
 type VoiceCallData struct {
 	Country             string  `json:"country"`
@@ -22,18 +19,8 @@ type VoiceCallData struct {
 	MedianOfCallsTime   int     `json:"median_of_call_time"`
 }
 
-func Voice() {
-	result := voiceContent()
-
-	fmt.Println()
-	for _, callData := range result {
-		fmt.Printf("%v\n", callData)
-	}
-	fmt.Println()
-}
-
-func voiceContent() []VoiceCallData {
-	content, err := ioutil.ReadFile("./simulator/voice.data")
+func Result() []VoiceCallData {
+	content, err := ioutil.ReadFile("../simulator/voice.data")
 	var voiceCallData []VoiceCallData
 	if err != nil {
 		log.Fatal(err)
